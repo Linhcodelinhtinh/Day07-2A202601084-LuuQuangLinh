@@ -78,8 +78,8 @@ Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
 - **Mô tả & lý do chọn cho chủ đề này:** Đảm bảo không bao giờ bị cắt vỡ một câu hoàn chỉnh, giúp mô hình embedding lấy được trọn vẹn ngữ nghĩa của câu luật.
 
 **Thành viên 4 — Nguyễn Văn Huy Hoàng**
-- **Loại chiến lược:** RecursiveChunker (chunk_size=800, overlap=100)
-- **Mô tả & lý do chọn cho chủ đề này:** Tăng kích thước chunk lên 800 để lấy được toàn bộ context của một điều khoản lớn, tránh việc các mệnh đề bị tách khỏi ngữ cảnh.
+- **Loại chiến lược:** `RecursiveChunker(chunk_size=400)`
+- **Mô tả & lý do chọn cho chủ đề này:** Tôi chọn recursive chunking vì tài liệu chính sách được tổ chức thành tiêu đề và các đoạn văn. Kích thước 400 ký tự giúp ưu tiên giữ ranh giới đoạn/câu, đủ để số liệu đi cùng điều kiện liên quan mà không gộp quá nhiều quy định khác nhau vào một chunk. Benchmark sử dụng mô hình `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, tạo 13 chunk từ corpus.
 
 **Thành viên 5 — Hoàng Trường Giang**
 - **Loại chiến lược:** HeadingChunker / Regex
@@ -92,7 +92,7 @@ Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
 | Trần Đăng Nguyên | Recursive (size 400) | 2/10 | Code chạy ổn định, chia chunk mượt mà không bị cắt vỡ chữ. | Size 400 quá nhỏ so với các điều khoản luật, làm tách rời điều kiện. |
 | Võ Duy Quang | FixedSize (size 300) | 0/10 | Dễ lập trình, chạy cực kỳ nhanh. | Thường xuyên cắt ngang câu, làm thay đổi hoàn toàn nghĩa. |
 | Lưu Quang Linh | Sentence (3 câu) | 0/10 | Giữ được cấu trúc ngữ pháp tốt nhất. | Có những câu rất ngắn làm lãng phí token, context không đủ rộng. |
-| Nguyễn Văn Huy Hoàng | Recursive (size 800) | 4/10 | Giữ được nhiều điều kiện ngữ cảnh hơn. | Dễ chứa nhiều thông tin nhiễu, làm điểm Cosine tổng thể bị giảm. |
+| Nguyễn Văn Huy Hoàng | Recursive (size 400) | 9/10 | Evidence xuất hiện trong top-3 ở cả 5/5 query; Q1, Q2, Q3 và Q5 có bằng chứng ngay top-1. | Ở Q4, top-1 đúng tài liệu nhưng thiếu điều kiện đầy đủ; chunk chứa đủ bằng chứng đứng top-2 nên câu trả lời chỉ đạt 1/2 điểm. |
 | Hoàng Trường Giang | HeadingChunker | 8/10 | Mọi quy định liên quan đều nằm trọn trong một cụm chủ đề duy nhất. | Đôi khi có section quá dài vượt quá max token limit của mô hình. |
 
 **Chiến lược nào tốt nhất cho chủ đề này? Tại sao?**
