@@ -25,7 +25,9 @@ _mock_embed = getattr(_m, '_mock_embed')
 FixedSizeChunker = getattr(_m, 'FixedSizeChunker')
 SentenceChunker = getattr(_m, 'SentenceChunker')
 RecursiveChunker = getattr(_m, 'RecursiveChunker')
+ListAwareChunker = getattr(_m, 'ListAwareChunker', None)
 ChunkingStrategyComparator = getattr(_m, 'ChunkingStrategyComparator')
+
 MockEmbedder = getattr(_m, 'MockEmbedder')
 template = _m
 
@@ -325,5 +327,19 @@ class TestEmbeddingStoreDeleteDocument(unittest.TestCase):
         self.assertLess(size_after, size_before)
 
 
+class TestListAwareChunker(unittest.TestCase):
+    def test_chunker_exists(self):
+        self.assertIsNotNone(ListAwareChunker)
+
+    def test_preserves_bullet_lists(self):
+        chunker = ListAwareChunker()
+        text = "Quy trình trả hàng:\n- Bước 1: Gửi yêu cầu\n- Bước 2: Đóng gói\n- Bước 3: Gửi đơn vị vận chuyển"
+        chunks = chunker.chunk(text)
+        self.assertEqual(len(chunks), 1)
+        self.assertIn("Quy trình trả hàng", chunks[0])
+        self.assertIn("- Bước 3: Gửi đơn vị vận chuyển", chunks[0])
+
+
 if __name__ == "__main__":
     unittest.main()
+
